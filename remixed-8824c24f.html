@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קהילת ברדיטשוב - קמפיין חברי בית הכנסת</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+            background: linear-gradient(135deg, #6b46c1 0%, #7c3aed 30%, #f59e0b 70%, #fbbf24 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #581c87 0%, #6b46c1 30%, #7c3aed 70%, #f59e0b 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: slideInDown 1s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+        
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease-out 0.4s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .content {
+            padding: 50px 40px;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        
+        .section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 2.5em;
+            color: #581c87;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            border-radius: 2px;
+        }
+        
+        /* Text Animation Classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .animate-slide-right {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease-out;
+        }
+        
+        .animate-slide-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .animate-slide-left {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s ease-out;
+        }
+        
+        .animate-slide-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .animate-scale-up {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s ease-out;
+        }
+        
+        .animate-scale-up.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .animate-fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+        
+        .animate-fade-in.visible {
+            opacity: 1;
+        }
+        
+        .stagger-animation {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .stagger-animation.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Text highlight animation */
+        .highlight-text {
+            background: linear-gradient(120deg, transparent 0%, rgba(107, 70, 193, 0.3) 50%, transparent 100%);
+            background-size: 200% 100%;
+            background-position: 100% 0;
+            transition: background-position 0.8s ease;
+        }
+        
+        .highlight-text.visible {
+            background-position: 0 0;
+        }
+        
+        /* Typing effect */
+        .typing-effect {
+            overflow: hidden;
+            border-left: 3px solid #6b46c1;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #6b46c1; }
+        }
+        
+        /* Floating text effect */
+        .float-text {
+            animation: float-gentle 3s ease-in-out infinite;
+        }
+        
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* Glow text effect */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(107, 70, 193, 0.5);
+            transition: text-shadow 0.3s ease;
+        }
+        
+        .glow-text:hover {
+            text-shadow: 0 0 20px rgba(107, 70, 193, 0.8);
+        }
+        
+        .financial-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px auto;
+            max-width: 1000px;
+            justify-items: center;
+        }
+        
+        .financial-card {
+            background: rgba(255,255,255,0.9);
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .financial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+        }
+        
+        .financial-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .financial-amount {
+            font-size: 2.8em;
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .income {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .expense {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .deficit {
+            background: linear-gradient(135deg, #dd6b20, #c05621);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px auto;
+            max-width: 1000px;
+            justify-items: center;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.9);
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .stat-number {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .expense-breakdown {
+            background: rgba(255,255,255,0.9);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .expense-item {
+            display: flex;
+            align-items: center;
+            padding: 30px;
+            border-bottom: 1px solid rgba(237, 100, 166, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .expense-item:hover {
+            background: linear-gradient(135deg, rgba(107, 70, 193, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);
+            transform: translateX(10px);
+        }
+        
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+        
+        .expense-icon {
+            font-size: 2.5em;
+            margin-left: 25px;
+            width: 80px;
+            text-align: center;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .expense-details {
+            flex: 1;
+        }
+        
+        .expense-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        .expense-description {
+            color: #718096;
+            font-size: 1em;
+        }
+        
+        .expense-amount {
+            text-align: center;
+            margin-right: 25px;
+        }
+        
+        .expense-sum {
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .expense-percent {
+            font-size: 0.95em;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .future-hope {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            margin: 40px 0;
+            box-shadow: 0 15px 35px rgba(56, 161, 105, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .future-hope::before {
+            content: '✨';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3em;
+            opacity: 0.3;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+        }
+        
+        .target-section {
+            background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 25px;
+            margin: 40px 0;
+            box-shadow: 0 15px 35px rgba(221, 107, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .target-section::before {
+            content: '🎯';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 3em;
+            opacity: 0.3;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .target-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px auto;
+            max-width: 1000px;
+            justify-items: center;
+        }
+        
+        .target-option {
+            background: rgba(255,255,255,0.15);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .target-option:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-5px);
+        }
+        
+        .target-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .membership-tiers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin: 40px auto;
+            max-width: 1200px;
+            justify-items: center;
+        }
+        
+        .tier-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .tier-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+        }
+        
+        .tier-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+        
+        .tier-popular {
+            border: 3px solid #dd6b20;
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(221, 107, 32, 0.1) 0%, rgba(192, 86, 33, 0.1) 100%);
+        }
+        
+        .tier-popular::before {
+            background: linear-gradient(135deg, #dd6b20, #c05621);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: -35px;
+            background: linear-gradient(135deg, #dd6b20, #c05621);
+            color: white;
+            padding: 10px 45px;
+            transform: rotate(45deg);
+            font-size: 0.85em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(221, 107, 32, 0.3);
+        }
+        
+        .tier-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .tier-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .tier-amount {
+            font-size: 2.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tier-description {
+            color: #718096;
+            margin-bottom: 25px;
+            font-size: 1.05em;
+        }
+        
+        .tier-button {
+            background: linear-gradient(135deg, #6b46c1 0%, #f59e0b 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(107, 70, 193, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tier-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .tier-button:hover::before {
+            left: 100%;
+        }
+        
+        .tier-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(107, 70, 193, 0.4);
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin: 40px auto;
+            max-width: 1200px;
+            justify-items: center;
+        }
+        
+        .benefit-card {
+            background: rgba(255,255,255,0.9);
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .benefit-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .benefit-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 40px auto;
+            max-width: 1000px;
+            justify-items: center;
+        }
+        
+        .contact-card {
+            background: rgba(255,255,255,0.9);
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .contact-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .contact-button {
+            background: linear-gradient(135deg, #6b46c1 0%, #f59e0b 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(107, 70, 193, 0.3);
+            width: 100%;
+            text-align: center;
+        }
+        
+        .contact-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(107, 70, 193, 0.4);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #581c87 0%, #6b46c1 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        
+        .footer-contacts {
+            margin: 30px 0;
+        }
+        
+        .footer-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            gap: 15px;
+            font-size: 1.1em;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(229, 62, 62, 0.3);
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(56, 161, 105, 0.3);
+        }
+        
+        .custom-amount {
+            background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(128, 90, 213, 0.3);
+        }
+        
+        .story-timeline {
+            max-width: 800px;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin: 50px 0;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 8px 25px rgba(107, 70, 193, 0.3);
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: rgba(255,255,255,0.9);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 0 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .timeline-content h4 {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3748;
+            background: linear-gradient(135deg, #6b46c1, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .timeline-content p {
+            color: #718096;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        
+        /* Quick Amount Buttons */
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px auto 50px;
+            max-width: 600px;
+        }
+        
+        .quick-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3em;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quick-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.6);
+        }
+        
+        .quick-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .quick-btn:hover::before {
+            left: 100%;
+        }
+        
+        .quick-btn.popular {
+            background: linear-gradient(135deg, #6b46c1, #7c3aed);
+            box-shadow: 0 8px 25px rgba(107, 70, 193, 0.4);
+            border: 3px solid #f59e0b;
+            transform: scale(1.1);
+        }
+        
+        .quick-btn.popular:hover {
+            box-shadow: 0 15px 40px rgba(107, 70, 193, 0.6);
+            transform: scale(1.15) translateY(-5px);
+        }
+        
+        .quick-btn.popular small {
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            margin-top: 3px;
+            font-weight: 600;
+        }
+        
+        .quick-btn.premium {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        }
+        
+        .quick-btn.premium:hover {
+            box-shadow: 0 15px 40px rgba(220, 38, 38, 0.6);
+        }
+        
+        .quick-btn.gold {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .quick-btn.gold:hover {
+            box-shadow: 0 15px 40px rgba(245, 158, 11, 0.6);
+        }
+
+        @media (max-width: 1200px) {
+            .membership-tiers {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
+            .financial-cards {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            
+            .contact-methods {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            
+            .target-options {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+                line-height: 1.3;
+                margin-bottom: 10px;
+            }
+            
+            .header h2 {
+                font-size: 1.3em;
+                margin-bottom: 8px;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .section {
+                margin-bottom: 40px;
+            }
+            
+            .section-title {
+                font-size: 1.7em;
+                margin-bottom: 20px;
+            }
+            
+            .financial-cards,
+            .stats-grid,
+            .membership-tiers,
+            .benefits-grid,
+            .contact-methods,
+            .target-options {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 30px 0;
+            }
+            
+            .quick-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin: 25px auto 35px;
+                max-width: 350px;
+            }
+            
+            .quick-btn {
+                padding: 18px 12px;
+                font-size: 1.2em;
+                min-height: 70px;
+            }
+            
+            .quick-btn.popular {
+                transform: scale(1.05);
+            }
+            
+            .quick-btn.popular:hover {
+                transform: scale(1.1) translateY(-3px);
+            }
+            
+            .financial-card,
+            .stat-card,
+            .tier-card,
+            .benefit-card,
+            .contact-card,
+            .target-option {
+                width: 100%;
+                max-width: none;
+                padding: 25px 20px;
+            }
+            
+            .tier-popular {
+                transform: none;
+            }
+            
+            .expense-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+                padding: 25px 20px;
+            }
+            
+            .expense-icon {
+                margin: 0;
+                font-size: 2.2em;
+            }
+            
+            .expense-amount {
+                margin: 0;
+            }
+            
+            .timeline-item {
+                flex-direction: row !important;
+                margin: 30px 0;
+            }
+            
+            .timeline-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
+                margin: 0;
+                flex-shrink: 0;
+            }
+            
+            .timeline-content {
+                margin: 0 0 0 20px;
+                padding: 25px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+                line-height: 1.2;
+            }
+            
+            .header h2 {
+                font-size: 1.1em;
+            }
+            
+            .header p {
+                font-size: 0.9em;
+            }
+            
+            .content {
+                padding: 25px 15px;
+            }
+            
+            .section {
+                margin-bottom: 35px;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            
+            .financial-cards,
+            .stats-grid,
+            .membership-tiers,
+            .benefits-grid,
+            .contact-methods,
+            .target-options {
+                gap: 15px;
+                margin: 25px 0;
+            }
+            
+            .quick-buttons {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin: 20px auto 30px;
+                max-width: 280px;
+            }
+            
+            .quick-btn {
+                padding: 15px 8px;
+                font-size: 1.1em;
+                min-height: 60px;
+            }
+            
+            .quick-btn.popular {
+                transform: scale(1.02);
+            }
+            
+            .quick-btn.popular:hover {
+                transform: scale(1.05) translateY(-2px);
+            }
+            
+            .financial-card,
+            .stat-card,
+            .tier-card,
+            .benefit-card,
+            .contact-card {
+                padding: 20px 15px;
+            }
+            
+            .timeline-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+            
+            .timeline-content {
+                padding: 20px 15px;
+                margin-left: 15px;
+            }
+            
+            .expense-item {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="animate-on-scroll glow-text">🕍 קהילת ברדיטשוב - בית שמש</h1>
+            <h2 class="animate-on-scroll highlight-text" style="animation-delay: 0.2s;">קמפיין חברי בית הכנסת</h2>
+            <p class="animate-on-scroll" style="animation-delay: 0.4s;">מהחצר של שלמה ועד לבית כנסת שלנו</p>
+        </div>
+
+        <div class="content">
+            <!-- Our Story Section -->
+            <div class="section" id="our-story">
+                <h2 class="section-title animate-on-scroll glow-text">📖 מהחצר של שלמה ועד לבית כנסת מפואר</h2>
+                <p class="animate-on-scroll" style="text-align: center; font-size: 1.3em; color: #581c87; font-weight: 600; margin-bottom: 30px; animation-delay: 0.2s;">המסע המדהים שלנו מאוהל זמני למבנה שקהילות אחרות רק חולמות עליו</p>
+                
+                <div style="background: linear-gradient(135deg, rgba(107, 70, 193, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%); padding: 40px; border-radius: 25px; margin: 30px 0; text-align: center;">
+                    <h3 style="font-size: 1.8em; color: #581c87; margin-bottom: 20px; font-weight: 700;">💪 מה שהשגנו זה לא מובן מאליו!</h3>
+                    <p style="font-size: 1.2em; line-height: 1.7; color: #4a5568;">
+                        <strong>רוב הקהילות בבית שמש</strong> עדיין מתפללות במקומות זמניים, באולמות שכורים, או במבנים צנועים שנבנו חלק אחר חלק. 
+                        <br><br>
+                        <span style="color: #6b46c1; font-weight: 600;">אנחנו? יש לנו מבנה גדול ומפואר שכל המגיע אליו מתרשם!</span>
+                    </p>
+                </div>
+                
+                <div class="story-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🏠</div>
+                        <div class="timeline-content">
+                            <h4>התחלנו מכלום - חצר של שלמה</h4>
+                            <p>בחצר פרטית, עם כמה כיסאות פלסטיק ורצון גדול. <strong>לא היה לנו כלום</strong> - אבל היה לנו חזון!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-icon">⛺</div>
+                        <div class="timeline-content">
+                            <h4>עברנו לאוהל זמני</h4>
+                            <p>כמו רוב הקהילות החדשות - אוהל, מזגן נייד, וכיסאות מתקפלים. <strong>לא נוח, אבל זה מה שהיה</strong>.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-icon">💭</div>
+                        <div class="timeline-content">
+                            <h4>החלטנו לחלום גדול</h4>
+                            <p>ראינו קהילות אחרות בונות <strong>"קיר פה, קיר שם"</strong> ואמרנו: <span style="color: #6b46c1; font-weight: 600;">אנחנו רוצים משהו אמיתי ומכובד!</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🚀</div>
+                        <div class="timeline-content">
+                            <h4>עשינו את הבלתי אפשרי</h4>
+                            <p>התגייסנו יחד, עשינו קמפיין גדול, לקחנו הלוואה, ובנינו <strong>מבנה מפואר ומכובד</strong> שכל מי שנכנס מתרשם!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🏛️</div>
+                        <div class="timeline-content">
+                            <h4>היום - בית כנסת מפואר ופעיל</h4>
+                            <p><strong>מבנה גדול, יפה ומכובד</strong> שמשרת קהילה גדולה. תפילות, שיעורים, אירועים - <span style="color: #f59e0b; font-weight: 600;">מקום שהקהילה גאה בו!</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #38a169 0%, #2f855a 100%); color: white; padding: 40px; border-radius: 25px; margin: 40px 0; text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 20px; right: 30px; font-size: 3em; opacity: 0.3;">🏆</div>
+                    <h3 style="font-size: 2em; margin-bottom: 15px; position: relative; z-index: 2;">✨ הישג שלא כל קהילה מצליחה בו</h3>
+                    <p style="font-size: 1.3em; line-height: 1.6; position: relative; z-index: 2;">
+                        <strong>רוב הקהילות החדשות</strong> עדיין מתחבטות איך לבנות מבנה ראוי.<br>
+                        <strong>אנחנו כבר השגנו את החלום!</strong> מבנה מפואר שמשרת מאות מתפללים.
+                    </p>
+                    <p style="font-size: 1.2em; margin-top: 20px; font-weight: 600; position: relative; z-index: 2;">
+                        🎯 עכשיו אנחנו רק צריכים לשמור על מה שבנינו יחד!
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); color: white; padding: 40px; border-radius: 25px; margin: 40px 0; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 20px; left: 30px; font-size: 3em; opacity: 0.3;">⚠️</div>
+                    <h3 style="font-size: 1.8em; margin-bottom: 20px; color: #ffffff; font-weight: 700; position: relative; z-index: 2;">💰 אבל מבנה מפואר = הוצאות גדולות</h3>
+                    <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; backdrop-filter: blur(10px); position: relative; z-index: 2;">
+                        <p style="font-size: 1.2em; line-height: 1.7; margin-bottom: 20px;">
+                            <strong>זה המחיר של הצלחה:</strong> מבנה גדול ומפואר דורש החזר הלוואה, חשמל, תחזוקה, ניקיון וכל מה שנדרש לקהילה מכובדת.
+                        </p>
+                        <p style="font-size: 1.2em; line-height: 1.7; margin-bottom: 20px;">
+                            <strong>בקמפיין הגדול שעשינו</strong> - קיבלנו תמיכה מעולה מהקהילה! אבל ככל שהזמן עובר, חלק מההוראות הקבע מתבטלות:
+                        </p>
+                        <div style="text-align: right; margin: 20px 0;">
+                            <p style="font-size: 1.1em; margin: 8px 0;">❌ משפחות שעוברות דירה</p>
+                            <p style="font-size: 1.1em; margin: 8px 0;">❌ שינויים במצב הכלכלי</p>
+                            <p style="font-size: 1.1em; margin: 8px 0;">❌ התרמה שהתחילה והופסקה</p>
+                        </div>
+                        <p style="font-size: 1.3em; line-height: 1.7; margin-top: 20px; font-weight: 600;">
+                            <strong>התוצאה:</strong> יש לנו מבנה מדהים, אבל חסר לנו 2,400₪ בחודש כדי לכסות את כל ההוצאות.
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #6b46c1 0%, #f59e0b 100%); color: white; padding: 40px; border-radius: 25px; text-align: center; margin: 40px 0; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 20px; right: 30px; font-size: 3em; opacity: 0.3;">🤝</div>
+                    <h3 style="font-size: 2em; margin-bottom: 15px; position: relative; z-index: 2;">🙏 זה הזמן שלכם להיות חלק מהסיפור!</h3>
+                    <p style="font-size: 1.3em; line-height: 1.6; position: relative; z-index: 2;">
+                        <strong>יש לנו את המבנה.</strong> יש לנו את הקהילה. יש לנו את החזון.<br>
+                        חסר לנו רק <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 10px; font-weight: 700;">2,400₪ בחודש</span> כדי לשמור על הכל פעיל ומשגשג.
+                    </p>
+                    <p style="font-size: 1.2em; margin-top: 20px; font-weight: 600; position: relative; z-index: 2;">
+                        💡 <strong>כל מי שמתפלל אצלנו נהנה מהמבנה המפואר הזה - בואו נשמור עליו יחד!</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Financial Overview -->
+            <div class="section" id="details">
+                <h2 class="section-title animate-on-scroll glow-text">📊 המצב הכספי הנוכחי</h2>
+                <p class="animate-on-scroll" style="text-align: center; font-size: 1.2em; color: #718096; margin-bottom: 40px; animation-delay: 0.2s;">שקיפות מלאה על מצב הקהילה הכספי</p>
+                
+                <div class="financial-cards">
+                    <div class="financial-card animate-scale-up" style="animation-delay: 0.1s;">
+                        <div class="financial-amount income float-text">18,600₪</div>
+                        <p style="font-size: 1.1em; font-weight: 600;">הכנסות חודשיות נוכחיות</p>
+                    </div>
+                    <div class="financial-card animate-scale-up" style="animation-delay: 0.3s;">
+                        <div class="financial-amount expense float-text" style="animation-delay: 0.5s;">21,000₪</div>
+                        <p style="font-size: 1.1em; font-weight: 600;">הוצאות חודשיות</p>
+                    </div>
+                    <div class="financial-card animate-scale-up" style="animation-delay: 0.5s;">
+                        <div class="financial-amount deficit float-text" style="animation-delay: 1s;">-2,400₪</div>
+                        <p style="font-size: 1.1em; font-weight: 600;">גירעון חודשי</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div style="font-size: 2.5em;">👥</div>
+                        <div class="stat-number">55</div>
+                        <p style="font-weight: 600; font-size: 1.1em;"><strong>משפחות תורמות</strong></p>
+                        <p style="font-size: 0.95em; color: #718096; margin-top: 8px;">13,012₪ מהוראות קבע</p>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size: 2.5em;">💰</div>
+                        <div class="stat-number">4,000</div>
+                        <p style="font-weight: 600; font-size: 1.1em;"><strong>₪ מהשכרת עז״נ</strong></p>
+                        <p style="font-size: 0.95em; color: #718096; margin-top: 8px;">לטשולנט - הכנסה קבועה</p>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size: 2.5em;">📈</div>
+                        <div class="stat-number">1,580</div>
+                        <p style="font-weight: 600; font-size: 1.1em;"><strong>₪ ממוצע מעליות</strong></p>
+                        <p style="font-size: 0.95em; color: #718096; margin-top: 8px;">מכירת עליות בשבת</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expense Breakdown -->
+            <div class="section">
+                <h2 class="section-title animate-on-scroll glow-text">💰 לאן הולך הכסף</h2>
+                <p class="animate-on-scroll" style="text-align: center; font-size: 1.2em; color: #718096; margin-bottom: 40px; animation-delay: 0.2s;">פירוט מלא של ההוצאות החודשיות - 21,000₪</p>
+                
+                <div class="expense-breakdown">
+                    <div class="expense-item">
+                        <div class="expense-icon">🏠</div>
+                        <div class="expense-details">
+                            <div class="expense-title">החזר הלוואת הבנייה</div>
+                            <div class="expense-description">תסתיים בעוד כמה שנים</div>
+                        </div>
+                        <div class="expense-amount">
+                            <div class="expense-sum">14,000₪</div>
+                            <div class="expense-percent">67% מהתקציב</div>
+                        </div>
+                    </div>
+                    
+                    <div class="expense-item">
+                        <div class="expense-icon">⚡</div>
+                        <div class="expense-details">
+                            <div class="expense-title">חשמל</div>
+                            <div class="expense-description">תאורה, מיזוג אוויר, ציוד</div>
+                        </div>
+                        <div class="expense-amount">
+                            <div class="expense-sum">2,800₪</div>
+                            <div class="expense-percent">13% מהתקציב</div>
+                        </div>
+                    </div>
+                    
+                    <div class="expense-item">
+                        <div class="expense-icon">🧹</div>
+                        <div class="expense-details">
+                            <div class="expense-title">ניקיון ותחזוקה</div>
+                            <div class="expense-description">שמירה על המקום</div>
+                        </div>
+                        <div class="expense-amount">
+                            <div class="expense-sum">1,680₪</div>
+                            <div class="expense-percent">8% מהתקציב</div>
+                        </div>
+                    </div>
+                    
+                    <div class="expense-item">
+                        <div class="expense-icon">🍷</div>
+                        <div class="expense-details">
+                            <div class="expense-title">קידוש שבתי</div>
+                            <div class="expense-description">אירוח וקהילה</div>
+                        </div>
+                        <div class="expense-amount">
+                            <div class="expense-sum">1,500₪</div>
+                            <div class="expense-percent">7% מהתקציב</div>
+                        </div>
+                    </div>
+                    
+                    <div class="expense-item">
+                        <div class="expense-icon">💧</div>
+                        <div class="expense-details">
+                            <div class="expense-title">שירותים בסיסיים</div>
+                            <div class="expense-description">מים, ניהול, עמלות</div>
+                        </div>
+                        <div class="expense-amount">
+                            <div class="expense-sum">1,020₪</div>
+                            <div class="expense-percent">5% מהתקציב</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Hope -->
+            <div class="future-hope">
+                <h3 style="font-size: 2em; margin-bottom: 20px;">🏗️ חדשות טובות לעתיד!</h3>
+                <p style="font-size: 1.3em; line-height: 1.8;">ההלוואה תסתיים בעוד מספר שנים, ואז <strong>67% מהתרומות ישוחררו לפעילויות קהילה!</strong></p>
+                <p style="margin-top: 20px; font-size: 1.2em;">עד אז, אנחנו זקוקים לעזרתכם כדי לכסות את הגירעון הקטן של 2,400₪ בלבד.</p>
+            </div>
+
+            <!-- Target Section -->
+            <div class="target-section">
+                <h2 style="font-size: 2.2em; margin-bottom: 15px;">🎯 היעד שלנו</h2>
+                <h3 style="font-size: 1.4em; margin-bottom: 25px;">יציבות כספית עד סוף השנה</h3>
+                <p style="font-size: 1.2em; margin-bottom: 35px;">אנחנו זקוקים לכסות גירעון חודשי קטן של <strong>2,400₪ בלבד</strong></p>
+                
+                <h4 style="font-size: 1.5em; margin-bottom: 25px;">🎯 דרכים להגיע ליעד:</h4>
+                <div class="target-options">
+                    <div class="target-option">
+                        <div class="target-number">24 חברים</div>
+                        <p style="font-size: 1.1em;">ברמת 100₪</p>
+                        <p style="font-size: 0.95em; margin-top: 10px; opacity: 0.9;">= כיסוי מלא של הגירעון</p>
+                    </div>
+                    <div class="target-option">
+                        <div class="target-number">12 חברים</div>
+                        <p style="font-size: 1.1em;">ברמת 200₪</p>
+                        <p style="font-size: 0.95em; margin-top: 10px; opacity: 0.9;">= יציבות מלאה + רזרבה</p>
+                    </div>
+                    <div class="target-option">
+                        <div class="target-number">8 חברים</div>
+                        <p style="font-size: 1.1em;">ברמת 300₪</p>
+                        <p style="font-size: 0.95em; margin-top: 10px; opacity: 0.9;">= יציבות + הרחבת פעילויות</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="warning-box">
+                <h4 style="font-size: 1.4em; margin-bottom: 20px;">⚠️ מה קורה בלי פעולה:</h4>
+                <p style="font-size: 1.1em; line-height: 1.6;">• קיצוץ בפעילויות נוספות</p>
+                <p style="font-size: 1.1em; line-height: 1.6;">• ביטול שיפורים מתוכננים</p>
+                <p style="font-size: 1.1em; line-height: 1.6;">• קושי בבניית רזרבות לעתיד</p>
+            </div>
+
+            <div class="success-box">
+                <p style="font-size: 1.3em; font-weight: 600;"><strong>💡 זכרו: כל 100₪ מקרבים אותנו למטרה - רק 24 חברים נוספים ונגיע ליציבות!</strong></p>
+            </div>
+
+            <!-- Membership Tiers -->
+            <div class="section" id="donation">
+                <h2 class="section-title animate-on-scroll glow-text">💎 תרמו עכשיו - בחרו סכום</h2>
+                <p class="animate-on-scroll" style="text-align: center; font-size: 1.2em; color: #718096; margin-bottom: 20px; animation-delay: 0.2s;">לחצו על הסכום שמתאים לכם להתרמה חודשית קבועה</p>
+                
+                <!-- Quick Amount Buttons -->
+                <div class="quick-buttons">
+                    <a href="https://www.matara.pro/nedarimplus/online/?mosad=7006954&Amount=50&avour=%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%94%D7%9B%D7%A0%D7%A1%D7%AA%20%D7%91%D7%A8%D7%93%D7%99%D7%98%D7%A9%D7%95%D7%91%20-%2050%20%D7%A9%22%D7%97&clientname=&phone=&groupe=%D7%93%D7%9E%D7%99%20%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%9B%D7%A0%D7%A1%D7%AA&onlykeva=1" class="quick-btn" target="_blank">
+                        <span>50₪</span>
+                    </a>
+                    
+                    <a href="https://www.matara.pro/nedarimplus/online/?mosad=7006954&Amount=100&avour=%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%94%D7%9B%D7%A0%D7%A1%D7%AA%20%D7%91%D7%A8%D7%93%D7%99%D7%98%D7%A9%D7%95%D7%91%20-%20100%20%D7%A9%22%D7%97&clientname=&phone=&groupe=%D7%93%D7%9E%D7%99%20%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%9B%D7%A0%D7%A1%D7%AA&onlykeva=1" class="quick-btn popular" target="_blank">
+                        <span>100₪</span>
+                        <small>פופולרי</small>
+                    </a>
+                    
+                    <a href="https://www.matara.pro/nedarimplus/online/?mosad=7006954&Amount=200&avour=%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%94%D7%9B%D7%A0%D7%A1%D7%AA%20%D7%91%D7%A8%D7%93%D7%99%D7%98%D7%A9%D7%95%D7%91%20-%20200%20%D7%A9%22%D7%97&clientname=&phone=&groupe=%D7%93%D7%9E%D7%99%20%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%9B%D7%A0%D7%A1%D7%AA&onlykeva=1" class="quick-btn premium" target="_blank">
+                        <span>200₪</span>
+                    </a>
+                    
+                    <a href="https://www.matara.pro/nedarimplus/online/?mosad=7006954&Amount=300&avour=%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%94%D7%9B%D7%A0%D7%A1%D7%AA%20%D7%91%D7%A8%D7%93%D7%99%D7%98%D7%A9%D7%95%D7%91%20-%20300%20%D7%A9%22%D7%97&clientname=&phone=&groupe=%D7%93%D7%9E%D7%99%20%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%9B%D7%A0%D7%A1%D7%AA&onlykeva=1" class="quick-btn gold" target="_blank">
+                        <span>300₪</span>
+                    </a>
+                </div>
+
+                <div class="custom-amount">
+                    <h4 style="font-size: 1.5em; margin-bottom: 15px;">💝 סכום אחר לבחירתכם</h4>
+                    <p style="font-size: 1.1em; margin-bottom: 25px;">בחרו סכום אישי שמתאים לכם</p>
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px; gap: 15px; flex-wrap: wrap;">
+                        <span style="font-size: 1.8em; font-weight: 700; color: white;">₪</span>
+                        <input type="number" id="custom-amount" min="10" value="150" style="width: 150px; padding: 15px; border: 2px solid rgba(255,255,255,0.3); border-radius: 15px; font-size: 1.2em; text-align: center; background: rgba(255,255,255,0.1); color: white; backdrop-filter: blur(10px); outline: none;" placeholder="הזן סכום">
+                        <span style="font-size: 1.2em; color: rgba(255,255,255,0.8);">חודשי</span>
+                    </div>
+                    
+                    <a href="#" id="custom-amount-link" class="tier-button" target="_blank" style="margin-top: 10px; background: rgba(255,255,255,0.9); color: #805ad5; border: 2px solid white; font-weight: 700;">תרומה בסכום שלי</a>
+                </div>
+            </div>
+
+            <!-- Benefits -->
+            <div class="section">
+                <h2 class="section-title">🌟 עם התמיכה שלכם</h2>
+                <p style="text-align: center; font-size: 1.2em; color: #718096; margin-bottom: 40px;">החזון שלנו לקהילה פורחת ומשגשגת - מה נוכל להשיג יחד</p>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📚</div>
+                        <div class="benefit-title">שיעורים נוספים</div>
+                        <p>הרחבת מגוון השיעורים והלימודים בקהילה</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">👨‍👩‍👧‍👦</div>
+                        <div class="benefit-title">פעילויות לילדים</div>
+                        <p>תוכניות חינוך ופעילויות לדור הצעיר</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🏛️</div>
+                        <div class="benefit-title">שיפורים בבית הכנסת</div>
+                        <p>שדרוג ציבורי ושיפור תנאי התפילה</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🤝</div>
+                        <div class="benefit-title">קהילה מגובשת</div>
+                        <p>חיזוק הקשרים והאחדות בקהילה</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div style="text-align: center; margin: 60px 0;">
+                <h2 style="font-size: 2.5em; margin-bottom: 20px; color: #2d3748;">💪 יחד נקים קהילה חזקה ומשגשגת</h2>
+                <p style="font-size: 1.2em; color: #718096; margin-bottom: 30px;">כל תרומה, כל חבר חדש, כל רגע של תמיכה - מביא אותנו צעד אחד קדימה לקראת המימוש של החזון המשותף שלנו</p>
+                
+                <div style="background: linear-gradient(135deg, #6b46c1 0%, #f59e0b 100%); color: white; padding: 40px; border-radius: 25px; margin: 30px 0; box-shadow: 0 15px 35px rgba(107, 70, 193, 0.3);">
+                    <h3 style="font-size: 2em; margin-bottom: 15px;">🚀 עזרו לנו לסגור פער קטן של 2,400₪ ולהגיע ליציבות מלאה!</h3>
+                    <p style="font-size: 1.2em;">כל 100₪ מקרבים אותנו למטרה - רק 24 חברים נוספים ונגיע ליציבות!</p>
+                    <p style="font-size: 1.1em; margin-top: 15px;"><strong>ביחד נבנה עתיד יהודי משגשג לקהילה שלנו.</strong></p>
+                </div>
+            </div>
+
+            <!-- Contact Methods -->
+            <div class="section">
+                <div class="contact-methods">
+                    <div class="contact-card">
+                        <div class="contact-icon">📱</div>
+                        <h4 style="font-size: 1.3em; margin-bottom: 10px; color: #2d3748;"><strong>נדרים פלוס</strong></h4>
+                        <p style="color: #718096;">התרמו בקלות ובבטחה דרך מערכת נדרים פלוס המובילה</p>
+                        <a href="https://www.matara.pro/nedarimplus/online/?mosad=7006954&Amount=&avour=%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%94%D7%9B%D7%A0%D7%A1%D7%AA%20%D7%91%D7%A8%D7%93%D7%99%D7%98%D7%A9%D7%95%D7%91&clientname=&phone=&groupe=%D7%93%D7%9E%D7%99%20%D7%97%D7%91%D7%A8%20%D7%91%D7%99%D7%AA%20%D7%9B%D7%A0%D7%A1%D7%AA&onlykeva=1" class="contact-button" target="_blank">תרומה עכשיו</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">📋</div>
+                        <h4 style="font-size: 1.3em; margin-bottom: 10px; color: #2d3748;"><strong>פנייה לגבאים</strong></h4>
+                        <p style="color: #718096;">צרו קשר ישיר עם גבאי הקהילה לפרטים נוספים ולייעוץ אישי</p>
+                        <a href="mailto:barditchev.rbsd@gmail.com" class="contact-button">שליחת מייל</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">💬</div>
+                        <h4 style="font-size: 1.3em; margin-bottom: 10px; color: #2d3748;"><strong>WhatsApp</strong></h4>
+                        <p style="color: #718096;">התחילו שיחה מהירה ונוחה עם גבאי הקהילה בווטסאפ</p>
+                        <a href="https://wa.me/972542615474" class="contact-button" target="_blank">פתיחת שיחה</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Message -->
+            <div style="background: linear-gradient(135deg, #581c87 0%, #6b46c1 100%); color: white; padding: 40px; border-radius: 25px; text-align: center; margin: 40px 0;">
+                <h3 style="font-size: 1.8em; margin-bottom: 20px;">⏰ הזמן פועל נגדנו - אבל יש תקווה!</h3>
+                <p style="font-size: 1.2em; line-height: 1.7;">כל חודש שעובר בלי תמיכה קבועה מחליש את יכולת הקהילה לתפקד.<br>
+                אבל עם התמיכה שלכם, נוכל לא רק לשרוד - <strong>אלא לפרוח!</strong></p>
+                <p style="font-size: 1.1em; margin-top: 20px; opacity: 0.9;">💎 תזכרו: ההלוואה תסתיים, והתרומות ישוחררו לפעילויות!</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h3 style="font-size: 1.5em; margin-bottom: 15px;">🙏 תזכו למצוות!</h3>
+            <p style="font-size: 1.2em; margin-bottom: 20px;">בברכה והוקרה רבה,<br><strong>גבאי קהילת ברדיטשוב</strong></p>
+            
+            <div class="footer-contacts">
+                <h4 style="font-size: 1.3em; margin-bottom: 20px; color: #e2e8f0;">פרטי קשר</h4>
+                
+                <div class="footer-contact">
+                    <span style="font-size: 1.2em;">📧</span>
+                    <span>barditchev.rbsd@gmail.com</span>
+                </div>
+                
+                <div class="footer-contact">
+                    <span style="font-size: 1.2em;">📱</span>
+                    <span>0542615474</span>
+                </div>
+                
+                <div class="footer-contact">
+                    <span style="font-size: 1.2em;">🏠</span>
+                    <span>רמה ד', בית שמש</span>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9em;">© 2025 קהילת ברדיטשוב - כל הזכויות שמורות</p>
+        </div>
+    </div>
+    
+    <script>
+        // Intersection Observer for animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -100px 0px',
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // Staggered animations observer
+        const staggerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const staggerElements = entry.target.querySelectorAll('.stagger-animation');
+                    staggerElements.forEach((el, index) => {
+                        setTimeout(() => {
+                            el.classList.add('visible');
+                        }, index * 100);
+                    });
+                    staggerObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // Handle custom amount link
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize animations
+            const animatedElements = document.querySelectorAll('.animate-on-scroll, .animate-slide-right, .animate-slide-left, .animate-scale-up, .animate-fade-in, .highlight-text');
+            animatedElements.forEach(el => observer.observe(el));
+            
+            // Initialize staggered animations
+            const staggerContainers = document.querySelectorAll('.financial-cards, .stats-grid, .membership-tiers, .benefits-grid');
+            staggerContainers.forEach(container => {
+                const children = container.children;
+                for (let i = 0; i < children.length; i++) {
+                    children[i].classList.add('stagger-animation');
+                }
+                staggerObserver.observe(container);
+            });
+            
+            // Custom amount functionality
+            const customAmountLink = document.getElementById('custom-amount-link');
+            const customAmountInput = document.getElementById('custom-amount');
+            
+            function updateCustomLink() {
+                const amount = customAmountInput.value;
+                if (amount && !isNaN(amount) && amount >= 10) {
+                    const baseUrl = 'https://www.matara.pro/nedarimplus/online/?mosad=7006954';
+                    const encodedTitle = encodeURIComponent(`חבר בית הכנסת ברדיטשוב - ${amount} ש"ח`);
+                    const encodedGroup = encodeURIComponent('דמי חבר בית כנסת');
+                    const url = `${baseUrl}&Amount=${amount}&avour=${encodedTitle}&clientname=&phone=&groupe=${encodedGroup}&onlykeva=1`;
+                    customAmountLink.href = url;
+                }
+            }
+            
+            // Update link when input changes
+            customAmountInput.addEventListener('input', updateCustomLink);
+            
+            // Set initial link
+            updateCustomLink();
+            
+            // Handle click
+            customAmountLink.addEventListener('click', function(e) {
+                const amount = customAmountInput.value;
+                if (!amount || isNaN(amount) || amount < 10) {
+                    e.preventDefault();
+                    alert('אנא הזינו סכום תקין (מינימום 10₪)');
+                    customAmountInput.focus();
+                }
+            });
+            
+            // Add typing effect to key phrases after page load
+            setTimeout(() => {
+                const keyPhrases = document.querySelectorAll('.financial-amount, .stat-number, .tier-amount');
+                keyPhrases.forEach((phrase, index) => {
+                    setTimeout(() => {
+                        phrase.style.animation = `pulse 2s ease-in-out infinite`;
+                    }, index * 200);
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
