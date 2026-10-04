@@ -1,0 +1,19 @@
+# Option 2 - control server only (the blocking itself happens on the Windows PC).
+#
+#   cp .env.example .env   # fill in the tokens
+#   docker compose up -d
+#   UI:  http://<server-ip>:8088
+
+services:
+  control-server:
+    build: ../control-server
+    container_name: youtube-guard
+    restart: unless-stopped
+    ports:
+      - "${CONTROL_PORT:-8088}:8088"
+    volumes:
+      - ./control-data:/app/data
+    environment:
+      - TZ=Asia/Jerusalem
+      - ADMIN_TOKEN=${ADMIN_TOKEN:?set ADMIN_TOKEN in .env}
+      - AGENT_TOKEN=${AGENT_TOKEN:?set AGENT_TOKEN in .env}

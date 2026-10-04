@@ -1,0 +1,5 @@
+node_modules/
+config.json
+state-cache.json
+logs/
+daemon/

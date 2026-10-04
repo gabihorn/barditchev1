@@ -1,0 +1,48 @@
+# Option 1 - AdGuard Home DNS + youtube-guard control server
+# Run on a Linux Docker host (client IPs must reach AdGuard unchanged for the $client rules).
+#
+#   cp .env.example .env   # fill in the values
+#   docker compose up -d
+#   open http://<server-ip>:3000 once to finish the AdGuard setup wizard
+#   (keep "Admin web interface" on port 80 and DNS on port 53 inside the wizard)
+
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3000:3000/tcp"          # first-run setup wizard only
+      - "${ADGUARD_WEB_PORT:-8080}:80/tcp"   # admin UI + API after setup
+    volumes:
+      - ./adguard/work:/opt/adguardhome/work
+      - ./adguard/conf:/opt/adguardhome/conf
+    environment:
+      - TZ=Asia/Jerusalem
+
+  control-server:
+    build: ../control-server
+    container_name: youtube-guard
+    restart: unless-stopped
+    depends_on:
+      - adguardhome
+    ports:
+      - "${CONTROL_PORT:-8088}:8088"
+    volumes:
+      - ./control-data:/app/data
+    environment:
+      - TZ=Asia/Jerusalem
+      - ADMIN_TOKEN=${ADMIN_TOKEN:?set ADMIN_TOKEN in .env}
+      - AGENT_TOKEN=${AGENT_TOKEN:-}
+      # AdGuard sync - remove ADGUARD_URL to disable
+      - ADGUARD_URL=http://adguardhome:80
+      - ADGUARD_USER=${ADGUARD_USER:-admin}
+      - ADGUARD_PASSWORD=${ADGUARD_PASSWORD:?set ADGUARD_PASSWORD in .env}
+      # Which devices are restricted (IP, CIDR or AdGuard client name, comma separated).
+      # Empty = the whole network.
+      - ADGUARD_CLIENTS=${ADGUARD_CLIENTS:-}
+      - BLOCK_DOMAINS=${BLOCK_DOMAINS:-youtube.com,youtu.be,youtube-nocookie.com}
+      - ALLOW_DOMAINS=${ALLOW_DOMAINS:-youtubekids.com,accounts.youtube.com}
+      - ADGUARD_RESYNC_SEC=60

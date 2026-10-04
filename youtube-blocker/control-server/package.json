@@ -1,0 +1,15 @@
+{
+  "name": "youtube-guard-control-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Central state + schedule for blocking youtube.com (AdGuard sync and Windows agent long-poll)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

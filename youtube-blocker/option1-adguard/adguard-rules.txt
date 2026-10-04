@@ -1,0 +1,24 @@
+! ------------------------------------------------------------------
+! Manual version of the rules (paste into AdGuard Home:
+! Filters -> Custom filtering rules) if you do NOT use the control server.
+! Replace 192.168.1.50 with the IP of the Windows PC.
+! To unblock: put "!" at the start of the || lines (comments them out).
+! ------------------------------------------------------------------
+
+! Block YouTube (all subdomains: www, m, music, studio...) for the PC only
+||youtube.com^$client=192.168.1.50
+||youtu.be^$client=192.168.1.50
+||youtube-nocookie.com^$client=192.168.1.50
+
+! Keep YouTube Kids and Google sign-in working
+@@||youtubekids.com^$client=192.168.1.50
+@@||accounts.youtube.com^$client=192.168.1.50
+
+! Do NOT block these - YouTube Kids streams video and images from them:
+!   googlevideo.com, ytimg.com, ggpht.com, youtubei.googleapis.com
+! (That is also why the built-in "Blocked services -> YouTube" must stay OFF:
+!  it blocks googlevideo.com and breaks YouTube Kids.)
+
+! Optional: stop browsers from bypassing AdGuard with their own DNS-over-HTTPS
+! use-application-dns.net makes Firefox turn DoH off automatically.
+||use-application-dns.net^

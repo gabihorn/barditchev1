@@ -1,0 +1,115 @@
+{
+  "name": "YouTube Guard - remote control",
+  "nodes": [
+    {
+      "id": "a1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "youtube-guard-control",
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "youtube",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "a2",
+      "name": "Build request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Accepts ?action=block|allow|auto|always_block|always_allow|schedule|status&minutes=30\nconst q = { ...($json.query || {}), ...($json.body || {}) };\nconst action = String(q.action || 'status').toLowerCase();\nconst minutes = Number(q.minutes) || 60;\nconst map = {\n  block:        { method: 'POST', path: '/api/block', body: { minutes } },\n  allow:        { method: 'POST', path: '/api/allow', body: { minutes } },\n  auto:         { method: 'POST', path: '/api/auto',  body: {} },\n  always_block: { method: 'POST', path: '/api/mode',  body: { mode: 'block' } },\n  always_allow: { method: 'POST', path: '/api/mode',  body: { mode: 'allow' } },\n  schedule:     { method: 'POST', path: '/api/mode',  body: { mode: 'schedule' } },\n  status:       { method: 'GET',  path: '/api/status', body: {} },\n};\nif (!map[action]) throw new Error(`Unknown action \"${action}\"`);\nreturn [{ json: { action, ...map[action] } }];"
+      }
+    },
+    {
+      "id": "a3",
+      "name": "Control server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "method": "={{ $json.method }}",
+        "url": "=http://192.168.1.10:8088{{ $json.path }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_WITH_ADMIN_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "a4",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ blocked: $json.effective.blocked, reason: $json.effective.reason, until: $json.effective.until }) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build request": {
+      "main": [
+        [
+          {
+            "node": "Control server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Control server": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

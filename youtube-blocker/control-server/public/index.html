@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>שליטה ביוטיוב</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --fg:#1d2330; --muted:#677084; --line:#dde1e8; --red:#c62828; --green:#2e7d32; --accent:#1f5fbf; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#14171c; --card:#1d2128; --fg:#e7eaf0; --muted:#9aa3b2; --line:#2c323c; --red:#ef6b6b; --green:#6cc070; --accent:#6ea2ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, "Segoe UI", Arial, sans-serif; }
+  main { max-width:560px; margin:0 auto; padding:16px; }
+  h1 { font-size:1.3rem; margin:8px 0 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; }
+  .state { font-size:1.6rem; font-weight:700; }
+  .state.blocked { color:var(--red); } .state.allowed { color:var(--green); }
+  .muted { color:var(--muted); font-size:.9rem; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  button, select, input { font:inherit; border-radius:8px; border:1px solid var(--line); padding:8px 12px; background:var(--card); color:var(--fg); }
+  button { cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.danger { background:var(--red); border-color:var(--red); color:#fff; }
+  textarea { width:100%; min-height:220px; font:13px/1.4 ui-monospace, Consolas, monospace; direction:ltr; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--fg); padding:8px; }
+  input[type=password] { flex:1; min-width:0; direction:ltr; }
+  #msg { min-height:1.5em; }
+  ul { padding-inline-start:18px; margin:6px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>שליטה ביוטיוב</h1>
+
+  <div class="card" id="login">
+    <div class="row">
+      <input type="password" id="token" placeholder="ADMIN_TOKEN" autocomplete="current-password">
+      <button class="primary" id="save">כניסה</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="state" id="state">…</div>
+    <div class="muted" id="reason"></div>
+  </div>
+
+  <div class="card">
+    <strong>פעולה מיידית</strong>
+    <div class="row">
+      <button class="danger" data-act="block" data-min="120">חסום ל-2 שעות</button>
+      <button data-act="allow" data-min="15">פתח ל-15 דק׳</button>
+      <button data-act="allow" data-min="30">פתח ל-30 דק׳</button>
+      <button data-act="allow" data-min="60">פתח לשעה</button>
+      <button data-act="auto">חזרה לאוטומטי</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>מצב קבוע</strong>
+    <div class="row">
+      <select id="mode">
+        <option value="schedule">לפי לוח זמנים</option>
+        <option value="block">חסום תמיד</option>
+        <option value="allow">פתוח תמיד</option>
+      </select>
+      <button id="setMode">שמור</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>לוח זמנים</strong>
+    <div class="muted">ימים: 0=ראשון … 6=שבת. ‏default=block אומר "חסום, חוץ מהחלונות".</div>
+    <textarea id="schedule" spellcheck="false"></textarea>
+    <div class="row"><button class="primary" id="saveSchedule">שמור לוח זמנים</button></div>
+  </div>
+
+  <div class="card">
+    <strong>מחשבים מחוברים</strong>
+    <div id="agents" class="muted">—</div>
+    <div id="adguard" class="muted"></div>
+  </div>
+
+  <div id="msg" class="muted"></div>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let token = '';
+  try { token = localStorage.getItem('ytg-token') || ''; } catch {}
+  $('token').value = token;
+  $('save').onclick = () => { token = $('token').value.trim(); try { localStorage.setItem('ytg-token', token); } catch {} load(); };
+
+  async function api(method, path, body) {
+    const res = await fetch(path, {
+      method,
+      headers: { Authorization: 'Bearer ' + token, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || res.status);
+    return data;
+  }
+
+  const fmtTime = (iso) => new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+  const reasonText = (e) => {
+    if (e.reason === 'override') return 'שינוי זמני עד ' + fmtTime(e.until);
+    if (e.reason.startsWith('mode:')) return 'מצב קבוע';
+    if (e.reason.startsWith('schedule:window')) return 'לפי לוח זמנים (חלון' + (e.reason.split(':')[2] ? ': ' + e.reason.split(':')[2] : '') + ')';
+    return 'לפי לוח זמנים (ברירת מחדל)';
+  };
+
+  function render(s) {
+    $('login').style.display = 'none';
+    const e = s.effective;
+    $('state').textContent = e.blocked ? 'יוטיוב חסום' : 'יוטיוב פתוח';
+    $('state').className = 'state ' + (e.blocked ? 'blocked' : 'allowed');
+    $('reason').textContent = reasonText(e);
+    $('mode').value = s.mode;
+    if (document.activeElement !== $('schedule')) $('schedule').value = JSON.stringify(s.schedule, null, 2);
+    const agents = Object.entries(s.agents || {});
+    $('agents').innerHTML = agents.length ? '<ul>' + agents.map(([id, a]) => {
+      const age = Math.round((Date.now() - new Date(a.lastSeen)) / 1000);
+      const li = document.createElement('li');
+      li.textContent = `${id} — ${a.applied ? 'חסום' : 'פתוח'} · נראה לפני ${age} שנ׳` + (a.error ? ' · שגיאה: ' + a.error : '');
+      return li.outerHTML;
+    }).join('') + '</ul>' : 'אין סוכנים (באפשרות 1 זה תקין)';
+    $('adguard').textContent = s.adguard ? 'AdGuard: ' + (s.adguard.ok ? 'מסונכרן' : s.adguard.ok === false ? 'שגיאה - ' + s.adguard.error : 'ממתין') : '';
+  }
+
+  async function run(fn) {
+    try { render(await fn()); $('msg').textContent = ''; }
+    catch (err) { $('msg').textContent = 'שגיאה: ' + err.message; if (String(err.message) === 'unauthorized') $('login').style.display = ''; }
+  }
+
+  const load = () => run(() => api('GET', '/api/status'));
+  document.querySelectorAll('[data-act]').forEach((b) => b.onclick = () => run(() =>
+    b.dataset.act === 'auto' ? api('POST', '/api/auto') : api('POST', '/api/' + b.dataset.act, { minutes: Number(b.dataset.min) })));
+  $('setMode').onclick = () => run(() => api('POST', '/api/mode', { mode: $('mode').value }));
+  $('saveSchedule').onclick = () => run(() => api('PUT', '/api/schedule', JSON.parse($('schedule').value)));
+
+  if (token) load();
+  setInterval(() => token && load(), 15000);
+</script>
+</body>
+</html>
