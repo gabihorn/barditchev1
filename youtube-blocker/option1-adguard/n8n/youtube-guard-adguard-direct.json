@@ -1,0 +1,137 @@
+{
+  "name": "YouTube Guard - AdGuard direct schedule",
+  "nodes": [
+    {
+      "id": "b1",
+      "name": "Every minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "b2",
+      "name": "Desired state",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Edit the schedule here. days: 0=Sunday ... 6=Saturday. Outside the windows YouTube is blocked.\nconst TZ = 'Asia/Jerusalem';\nconst ALLOW_WINDOWS = [\n  { days: [0, 1, 2, 3, 4], from: '16:00', to: '17:30' },\n  { days: [5], from: '10:00', to: '12:00' },\n];\n\nconst now = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }));\nconst day = now.getDay();\nconst minutes = now.getHours() * 60 + now.getMinutes();\nconst toMin = (s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };\nconst allowed = ALLOW_WINDOWS.some((w) => w.days.includes(day) && minutes >= toMin(w.from) && minutes < toMin(w.to));\nreturn [{ json: { blocked: !allowed } }];"
+      }
+    },
+    {
+      "id": "b3",
+      "name": "Get AdGuard rules",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "http://192.168.1.10:8080/control/filtering/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      }
+    },
+    {
+      "id": "b4",
+      "name": "Merge rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Same markers as the control server, so the two never leave duplicate rules behind.\nconst START = '! >>> youtube-guard (managed automatically - do not edit) >>>';\nconst END = '! <<< youtube-guard <<<';\nconst CLIENT = '192.168.1.50';              // IP of the Windows PC\nconst BLOCK = ['youtube.com', 'youtu.be', 'youtube-nocookie.com'];\nconst ALLOW = ['youtubekids.com', 'accounts.youtube.com'];\n\nconst blocked = $('Desired state').first().json.blocked;\nconst existing = $input.first().json.user_rules || [];\n\nconst rest = [];\nlet inside = false;\nfor (const line of existing) {\n  if (line === START) { inside = true; continue; }\n  if (line === END) { inside = false; continue; }\n  if (!inside) rest.push(line);\n}\nwhile (rest.length && rest[rest.length - 1].trim() === '') rest.pop();\n\nconst managed = [START];\nif (blocked) {\n  for (const d of BLOCK) managed.push(`||${d}^$client=${CLIENT}`);\n  for (const d of ALLOW) managed.push(`@@||${d}^$client=${CLIENT}`);\n} else {\n  managed.push('! state: allowed');\n}\nmanaged.push(END);\n\nconst rules = [...rest, ...managed];\nif (JSON.stringify(rules) === JSON.stringify(existing)) return [];   // nothing to do\nreturn [{ json: { rules, blocked } }];"
+      }
+    },
+    {
+      "id": "b5",
+      "name": "Set AdGuard rules",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.1.10:8080/control/filtering/set_rules",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ rules: $json.rules }) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Every minute": {
+      "main": [
+        [
+          {
+            "node": "Desired state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Desired state": {
+      "main": [
+        [
+          {
+            "node": "Get AdGuard rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get AdGuard rules": {
+      "main": [
+        [
+          {
+            "node": "Merge rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge rules": {
+      "main": [
+        [
+          {
+            "node": "Set AdGuard rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

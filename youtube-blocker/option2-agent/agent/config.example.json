@@ -1,0 +1,14 @@
+{
+  "serverUrl": "http://192.168.1.10:8088",
+  "agentToken": "REPLACE_WITH_AGENT_TOKEN",
+  "agentId": "kids-pc",
+  "method": "hosts",
+  "dohGuard": true,
+  "enforceBrowserPolicies": true,
+  "longPollSeconds": 25,
+  "retrySeconds": 10,
+  "enforceSeconds": 30,
+  "heartbeatSeconds": 60,
+  "offlineFallback": "last",
+  "killBrowsersOnBlock": false
+}

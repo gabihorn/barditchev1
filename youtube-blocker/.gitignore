@@ -1,0 +1,7 @@
+option1-adguard/.env
+option1-adguard/adguard/
+option1-adguard/control-data/
+option2-agent/.env
+option2-agent/control-data/
+control-server/data/
+node_modules/
