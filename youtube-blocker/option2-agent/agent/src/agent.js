@@ -1,8 +1,10 @@
 'use strict';
 
-// youtube-guard Windows agent.
-// Long-polls the control server for the desired state and enforces it locally
-// (hosts file and/or Windows Firewall). Runs as a Windows service (LocalSystem) via node-windows.
+// youtube-guard Windows agent. Runs as a Windows service (LocalSystem) via node-windows and
+// enforces the desired state locally (hosts file and/or Windows Firewall).
+// Two controllers:
+//   "server"   - long-polls the control server for the desired state
+//   "telegram" - standalone: keeps the schedule locally and is controlled through a Telegram bot
 
 const fs = require('fs');
 const os = require('os');
@@ -18,6 +20,8 @@ const CONFIG_FILE = process.env.YTG_CONFIG || path.join(ROOT, 'config.json');
 const CACHE_FILE = path.join(ROOT, 'state-cache.json');
 
 const DEFAULTS = {
+  controller: 'server',          // server | telegram
+  telegram: {},                  // { botToken, pairingCode, notifyScheduleChanges }
   serverUrl: '',
   agentToken: '',
   agentId: os.hostname(),
@@ -36,8 +40,14 @@ const DEFAULTS = {
 
 function loadConfig() {
   const cfg = { ...DEFAULTS, ...JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8').replace(/^\uFEFF/, '')) };
-  if (!/^https?:\/\//.test(cfg.serverUrl)) throw new Error('config.serverUrl must be an http(s) URL');
-  if (!cfg.agentToken) throw new Error('config.agentToken is required');
+  if (cfg.controller === 'server') {
+    if (!/^https?:\/\//.test(cfg.serverUrl)) throw new Error('config.serverUrl must be an http(s) URL');
+    if (!cfg.agentToken) throw new Error('config.agentToken is required');
+  } else if (cfg.controller === 'telegram') {
+    if (!cfg.telegram || !cfg.telegram.botToken) throw new Error('config.telegram.botToken is required');
+  } else {
+    throw new Error('config.controller must be server | telegram');
+  }
   if (!['hosts', 'firewall', 'both'].includes(cfg.method)) throw new Error('config.method must be hosts | firewall | both');
   if (!['last', 'block', 'allow'].includes(cfg.offlineFallback)) throw new Error('config.offlineFallback must be last | block | allow');
   cfg.longPollSeconds = Math.min(Math.max(Number(cfg.longPollSeconds) || 25, 0), 55);
@@ -81,6 +91,7 @@ let online = null;
 let target = null;   // state currently being enforced
 let applied = null;  // state last applied successfully
 let lastError = null;
+let notify = () => {}; // set by the telegram controller
 
 function fallbackState() {
   if (cfg.offlineFallback === 'block') return true;
@@ -102,6 +113,10 @@ async function doEnforce(blocked) {
   if (useHosts) changed = (await hosts.apply(blocked, cfg.blockDomains)) || changed;
   if (useFirewall) await firewall.applyYoutubeIps(blocked, cfg.blockDomains);
 
+  if (changed && applied === blocked) {
+    log.warn('hosts file was modified externally - block restored');
+    notify('⚠️ מישהו שינה את קובץ ה-hosts במחשב. החסימה הוחזרה.');
+  }
   if (changed || applied !== blocked) {
     await run('ipconfig', ['/flushdns']).catch((e) => log.warn(e.message));
     if (blocked && applied === false && cfg.killBrowsersOnBlock) await killBrowsers();
@@ -126,6 +141,7 @@ function enforce(blocked) {
 // ---------------- server communication ----------------
 
 async function heartbeat() {
+  if (cfg.controller !== 'server') return;
   try {
     await fetch(new URL('/api/agent/heartbeat', cfg.serverUrl), {
       method: 'POST',
@@ -174,10 +190,33 @@ async function pollLoop() {
   }
 }
 
+// ---------------- standalone (telegram) ----------------
+
+async function startStandalone() {
+  const { Store } = require('./store');
+  const { TelegramBot, statusText } = require('./telegram');
+  const dataDir = path.join(ROOT, 'data');
+  const store = new Store(path.join(dataDir, 'state.json'));
+
+  store.on('change', (snap) => enforce(snap.blocked));
+  await enforce(store.effective.blocked);
+  setInterval(() => store.refresh(), 10_000);
+
+  const bot = new TelegramBot(cfg.telegram, {
+    store,
+    dataDir,
+    log,
+    getAgentStatus: () => ({ applied, error: lastError }),
+  });
+  notify = (text) => bot.broadcast(text);
+  bot.broadcast(`🖥️ המחשב הופעל\n${statusText(store.snapshot(), store.data.schedule)}`);
+  bot.run();
+}
+
 // ---------------- startup ----------------
 
 async function main() {
-  log.info(`youtube-guard agent starting (id=${cfg.agentId}, server=${cfg.serverUrl}, method=${cfg.method})`);
+  log.info(`youtube-guard agent starting (id=${cfg.agentId}, controller=${cfg.controller}, method=${cfg.method})`);
 
   if (cfg.enforceBrowserPolicies) {
     await policies.enforceBrowserPolicies().catch((e) => log.warn(`browser policies: ${e.message}`));
@@ -187,10 +226,15 @@ async function main() {
   if (!useHosts) await hosts.apply(false).catch((e) => log.warn(e.message));
   if (!useFirewall) await firewall.applyYoutubeIps(false).catch(() => {});
 
+  setInterval(() => target !== null && enforce(target), cfg.enforceSeconds * 1000);
+
+  if (cfg.controller === 'telegram') {
+    await startStandalone();
+    return;
+  }
+
   // Enforce the last known state right away, before the server answers.
   await enforce(fallbackState());
-
-  setInterval(() => target !== null && enforce(target), cfg.enforceSeconds * 1000);
   setInterval(heartbeat, cfg.heartbeatSeconds * 1000);
   pollLoop();
 }
